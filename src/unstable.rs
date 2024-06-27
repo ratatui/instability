@@ -91,6 +91,7 @@ impl UnstableAttribute {
 }
 
 pub(crate) trait ItemLike {
+    #[allow(unused)]
     fn attrs(&self) -> &[syn::Attribute];
 
     fn push_attr(&mut self, attr: syn::Attribute);
@@ -136,6 +137,7 @@ impl_has_visibility!(
     syn::ItemTrait,
     syn::ItemConst,
     syn::ItemStatic,
+    syn::ItemUse,
 );
 
 impl ItemLike for syn::ItemStruct {
