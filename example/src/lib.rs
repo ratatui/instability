@@ -6,7 +6,7 @@
 /// This function does something really risky!
 ///
 /// Don't use it yet!
-#[stability::unstable(feature = "risky-function", issue = "#101")]
+#[instability::unstable(feature = "risky-function", issue = "#101")]
 pub fn risky_function() {
     unimplemented!()
 }
@@ -14,7 +14,7 @@ pub fn risky_function() {
 /// This struct does something really risky!
 ///
 /// Don't use it yet!
-#[stability::unstable(feature = "risky-struct", issue = "#102")]
+#[instability::unstable(feature = "risky-struct", issue = "#102")]
 pub struct RiskyStruct {
     pub x: u8,
 }

@@ -1,22 +1,25 @@
-# Stability
+# Instability
 
 Rust API stability attributes for the rest of us.
 
-[![Crates.io](https://img.shields.io/crates/v/stability.svg)](https://crates.io/crates/stability)
-[![Documentation](https://docs.rs/stability/badge.svg)][documentation]
+[![Crates.io](https://img.shields.io/crates/v/instability.svg)](https://crates.io/crates/instability)
+[![Documentation](https://docs.rs/instability/badge.svg)][documentation]
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Minimum supported Rust version](https://img.shields.io/badge/rustc-1.60+-yellow.svg)
-[![Build](https://github.com/sagebind/stability/workflows/ci/badge.svg)](https://github.com/sagebind/stability/actions)
+[![Build](https://github.com/ratatui-org/ininstability/workflows/ci/badge.svg)](https://github.com/sagebind/stability/actions)
 
 ## Overview
 
-This crate provides attribute macros for specifying API stability of public API items of a crate. For a quick example:
+This is a fork of the [Stability](https://crates.io/crates/stability) crate with the
+[blessing](https://github.com/sagebind/stability/issues/12) of the original maintainer Stephen M.
+Coakley ([@sagebind](https://github.com/sagebind)). This crate provides attribute macros for
+specifying API stability of public API items of a crate. For a quick example:
 
 ```rust
 /// This function does something really risky!
 ///
 /// Don't use it yet!
-#[stability::unstable(feature = "risky-function")]
+#[instability::unstable(feature = "risky-function")]
 pub fn risky_function() {
     unimplemented!()
 }
@@ -30,7 +33,7 @@ Install via Cargo by adding to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-stability = "0.2"
+instability = "0.3"
 ```
 
 ### Supported Rust versions
@@ -41,5 +44,4 @@ The current release is only guaranteed to work with the latest stable Rust compi
 
 This project's source code and documentation are licensed under the MIT license. See the [LICENSE](LICENSE) file for details.
 
-
-[documentation]: https://docs.rs/stability
+[documentation]: https://docs.rs/instability

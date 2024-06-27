@@ -11,9 +11,9 @@
 //! though tuned more toward what the needs of normal crate authors.
 //!
 //! For complete examples of how to use this crate, check out the source code
-//! for the [`stability-example`
-//! crate](https://github.com/sagebind/stability/tree/master/example) included
-//! in the stability repository.
+//! for the [`instability-example`
+//! crate](https://github.com/ratatui-org/instability/tree/master/example) included
+//! in the instability repository.
 //!
 //! Currently, only the [`#[unstable]`][macro@unstable] attribute is available.
 //! Please see the documentation of that macro for an explanation on what it
@@ -76,7 +76,7 @@ mod unstable;
 /// /// This function does something really risky!
 /// ///
 /// /// Don't use it yet!
-/// #[stability::unstable(feature = "risky-function")]
+/// #[instability::unstable(feature = "risky-function")]
 /// pub fn risky_function() {
 ///     unimplemented!()
 /// }

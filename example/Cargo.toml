@@ -1,8 +1,8 @@
 [package]
-name = "stability-example"
+name = "instability-example"
 version = "0.0.0"
-description = "Example crate demonstrating stablity usage."
-authors = ["Stephen M. Coakley <me@stephencoakley.com>"]
+description = "Example crate demonstrating instablity usage."
+authors = ["Stephen M. Coakley <me@stephencoakley.com>", "Joshka"]
 edition = "2021"
 publish = false
 
@@ -10,5 +10,5 @@ publish = false
 unstable-risky-function = []
 unstable-risky-struct = []
 
-[dependencies.stability]
-path = "../"
+[dependencies]
+instability = { path = "../" }

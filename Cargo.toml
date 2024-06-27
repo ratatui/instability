@@ -1,21 +1,18 @@
 [package]
-name = "stability"
-version = "0.2.0"
-description = "Rust API stability attributes for the rest of us."
-authors = ["Stephen M. Coakley <me@stephencoakley.com>"]
+name = "instability"
+version = "0.3.0"
+description = "Rust API stability attributes for the rest of us. A fork of the `stability` crate."
+authors = ["Stephen M. Coakley <me@stephencoakley.com>", "Joshka"]
 license = "MIT"
-repository = "https://github.com/sagebind/stability"
-documentation = "https://docs.rs/stability/"
+repository = "https://github.com/ratatui-org/instability"
+documentation = "https://docs.rs/instability/"
 readme = "README.md"
 edition = "2021"
 rust-version = "1.60"
 
 [dependencies]
 quote = "1"
-
-[dependencies.syn]
-version = "2"
-features = ["derive", "full"]
+syn = { version = "2", features = ["derive", "full"] }
 
 [lib]
 proc-macro = true
