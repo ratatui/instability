@@ -91,6 +91,7 @@ impl UnstableAttribute {
 }
 
 pub(crate) trait ItemLike {
+    #[allow(unused)]
     fn attrs(&self) -> &[syn::Attribute];
 
     fn push_attr(&mut self, attr: syn::Attribute);
