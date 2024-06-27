@@ -1,6 +1,6 @@
 [package]
 name = "instability"
-version = "0.3.0"
+version = "0.3.1"
 description = "Rust API stability attributes for the rest of us. A fork of the `stability` crate."
 authors = ["Stephen M. Coakley <me@stephencoakley.com>", "Joshka"]
 license = "MIT"

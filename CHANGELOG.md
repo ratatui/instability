@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1](https://github.com/ratatui-org/instability/compare/instability-v0.3.0...instability-v0.3.1) - 2024-06-27
+
+### Added
+- allow use statements to be marked unstable ([#3](https://github.com/ratatui-org/instability/pull/3))
+
+### Other
+- tweak doc wording and formatting ([#4](https://github.com/ratatui-org/instability/pull/4))
+- add release automation ([#1](https://github.com/ratatui-org/instability/pull/1))
+
 ## [0.3.0] - 2024-06-27
 
 ### ⚙️ Miscellaneous Tasks
