@@ -4,7 +4,7 @@ Rust API stability attributes for the rest of us.
 
 [![Crates.io](https://img.shields.io/crates/v/instability.svg)](https://crates.io/crates/instability)
 [![Documentation](https://docs.rs/instability/badge.svg)][documentation]
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 ![Minimum supported Rust version](https://img.shields.io/badge/rustc-1.61+-yellow.svg)
 [![Build](https://github.com/ratatui-org/instability/workflows/Check/badge.svg)](https://github.com/ratatui-org/instability/actions)
 [![Build](https://github.com/ratatui-org/instability/workflows/Test/badge.svg)](https://github.com/ratatui-org/instability/actions)
@@ -43,6 +43,6 @@ The current release is only guaranteed to work with the latest stable Rust compi
 
 ## License
 
-This project's source code and documentation are licensed under the MIT license. See the [LICENSE](LICENSE) file for details.
+This project's source code and documentation are licensed under the MIT license. See the [LICENSE](LICENSE.md) file for details.
 
 [documentation]: https://docs.rs/instability
