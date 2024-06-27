@@ -74,6 +74,6 @@ jobs:
       - name: Install Rust 1.60
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: 1.60
+          toolchain: "1.60"
       - name: cargo +1.60 check
-        run: cargo +1.60 check
+        run: cargo check
