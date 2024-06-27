@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.2](https://github.com/ratatui-org/instability/compare/instability-v0.3.1...instability-v0.3.2) - 2024-06-27
+
+### Fixed
+- readme link to license ([#7](https://github.com/ratatui-org/instability/pull/7))
+- readme badge ([#5](https://github.com/ratatui-org/instability/pull/5))
+
 ## [0.3.1](https://github.com/ratatui-org/instability/compare/instability-v0.3.0...instability-v0.3.1) - 2024-06-27
 
 ### Added
