@@ -15,7 +15,7 @@
 //! [API stability]: https://rustc-dev-guide.rust-lang.org/stability.html
 //! [`deprecated`]:
 //!     https://doc.rust-lang.org/reference/attributes/diagnostics.html#the-deprecated-attribute
-//! [`instability-example`]: https://github.com/ratatui-org/instability/tree/master/example
+//! [`instability-example`]: https://github.com/ratatui-org/instability/tree/main/example
 //! [`unstable`]: macro@unstable
 
 use proc_macro::TokenStream;
