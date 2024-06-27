@@ -6,7 +6,8 @@ Rust API stability attributes for the rest of us.
 [![Documentation](https://docs.rs/instability/badge.svg)][documentation]
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Minimum supported Rust version](https://img.shields.io/badge/rustc-1.61+-yellow.svg)
-[![Build](https://github.com/ratatui-org/ininstability/workflows/ci/badge.svg)](https://github.com/sagebind/stability/actions)
+[![Build](https://github.com/ratatui-org/instability/workflows/Check/badge.svg)](https://github.com/ratatui-org/instability/actions)
+[![Build](https://github.com/ratatui-org/instability/workflows/Test/badge.svg)](https://github.com/ratatui-org/instability/actions)
 
 ## Overview
 
