@@ -67,7 +67,7 @@ jobs:
           RUSTDOCFLAGS: --cfg docsrs
   msrv:
     # check that we can build using the minimal rust version that is specified by this crate
-    name: Check MSRV (1.60) /
+    name: Check MSRV (1.60)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -76,4 +76,4 @@ jobs:
         with:
           toolchain: 1.60
       - name: cargo +1.60 check
-        run: cargo check
+        run: cargo +1.60 check
