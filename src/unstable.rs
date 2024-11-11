@@ -1,31 +1,22 @@
+use darling::FromMeta;
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::meta::ParseNestedMeta;
-use syn::parse::Result;
 use syn::{parse_quote, Visibility};
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, FromMeta)]
 pub(crate) struct UnstableAttribute {
+    /// The name of the feature that enables the unstable API.
+    ///
+    /// If not specified, the item will instead be guarded by a catch-all `unstable` feature.
     feature: Option<String>,
+
+    /// A link or reference to a tracking issue for the unstable feature.
+    ///
+    /// This will be included in the item's documentation.
     issue: Option<String>,
 }
 
 impl UnstableAttribute {
-    pub(crate) fn parse(&mut self, meta: ParseNestedMeta) -> Result<()> {
-        if meta.path.is_ident("feature") {
-            match meta.value()?.parse()? {
-                syn::Lit::Str(s) => self.feature = Some(s.value()),
-                _ => panic!(),
-            }
-        } else if meta.path.is_ident("issue") {
-            match meta.value()?.parse()? {
-                syn::Lit::Str(s) => self.issue = Some(s.value()),
-                _ => panic!(),
-            }
-        }
-        Ok(())
-    }
-
     fn crate_feature_name(&self) -> String {
         if let Some(name) = self.feature.as_deref() {
             format!("unstable-{}", name)

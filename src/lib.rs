@@ -18,6 +18,7 @@
 //! [`instability-example`]: https://github.com/ratatui-org/instability/tree/main/example
 //! [`unstable`]: macro@unstable
 
+use darling::{ast::NestedMeta, Error, FromMeta};
 use proc_macro::TokenStream;
 use syn::{parse_macro_input, Item};
 
@@ -103,10 +104,14 @@ mod unstable;
 /// ```
 #[proc_macro_attribute]
 pub fn unstable(args: TokenStream, input: TokenStream) -> TokenStream {
-    let mut attributes = unstable::UnstableAttribute::default();
-    let attributes_parser = syn::meta::parser(|meta| attributes.parse(meta));
-    parse_macro_input!(args with attributes_parser);
-
+    let attributes = match NestedMeta::parse_meta_list(args.into()) {
+        Ok(attributes) => attributes,
+        Err(err) => return TokenStream::from(Error::from(err).write_errors()),
+    };
+    let attributes = match unstable::UnstableAttribute::from_list(&attributes) {
+        Ok(attributes) => attributes,
+        Err(err) => return TokenStream::from(err.write_errors()),
+    };
     match parse_macro_input!(input as Item) {
         Item::Type(item_type) => attributes.expand(item_type),
         Item::Enum(item_enum) => attributes.expand(item_enum),
