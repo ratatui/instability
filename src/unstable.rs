@@ -58,13 +58,13 @@ impl UnstableAttribute {
             return item.into_token_stream().into();
         }
         let feature_flag = self.feature_flag();
-        let availability_doc = formatdoc! {"
-            # Availability
+        let doc = formatdoc! {"
+            # Stability
 
             **This API is marked as unstable** and is only available when the `{feature_flag}`
             crate feature is enabled. This comes with no stability guarantees, and could be changed
             or removed at any time."};
-        item.push_attr(parse_quote! { #[doc = #availability_doc] });
+        item.push_attr(parse_quote! { #[doc = #doc] });
 
         if let Some(issue) = &self.issue {
             let doc = format!("The tracking issue is: `{}`.", issue);
@@ -118,8 +118,8 @@ mod tests {
         assert_eq!(tokens.to_string(), quote! { struct MyStruct; }.to_string());
     }
 
-    const DEFAULT_DOC: &str = "# Availability\n\n**This API is marked as unstable** and is only available when the `unstable`\ncrate feature is enabled. This comes with no stability guarantees, and could be changed\nor removed at any time.";
-    const WITH_FEATURES_DOC: &str = "# Availability\n\n**This API is marked as unstable** and is only available when the `unstable-experimental`\ncrate feature is enabled. This comes with no stability guarantees, and could be changed\nor removed at any time.";
+    const DEFAULT_DOC: &str = "# Stability\n\n**This API is marked as unstable** and is only available when the `unstable`\ncrate feature is enabled. This comes with no stability guarantees, and could be changed\nor removed at any time.";
+    const WITH_FEATURES_DOC: &str = "# Stability\n\n**This API is marked as unstable** and is only available when the `unstable-experimental`\ncrate feature is enabled. This comes with no stability guarantees, and could be changed\nor removed at any time.";
     const ISSUE_DOC: &str = "The tracking issue is: `#123`.";
 
     #[test]

@@ -19,9 +19,11 @@
 //! [`unstable`]: macro@unstable
 
 use proc_macro::TokenStream;
+use stable::stable_macro;
 use unstable::unstable_macro;
 
 mod item_like;
+mod stable;
 mod unstable;
 
 /// Mark an API as unstable.
@@ -38,7 +40,7 @@ mod unstable;
 ///   downstream consumers cannot access it unless they opt-in to the unstable API.
 /// - Changes the Visibility of certain child items of the annotated item (such as struct fields) to
 ///   match the item's visibility. Children that are not public will not be affected.
-/// - Appends an "Availability" section to the item's documentation that notes that the item is
+/// - Appends an "Stability" section to the item's documentation that notes that the item is
 ///   unstable and indicates the name of the crate feature to enable it.
 ///
 /// Child items of annotated modules are unchanged, as it might be desirable to be able to re-export
@@ -46,8 +48,8 @@ mod unstable;
 /// within the module with the same feature name if you want to restrict the module's contents
 /// itself and not just the module namespace.
 ///
-/// Note that unlike the [`unstable`][std-unstable] attribute used in the standard library, this attribute does
-/// not apply itself recursively to child items.
+/// Note that unlike the [`unstable`][std-unstable] attribute used in the standard library, this
+/// attribute does not apply itself recursively to child items.
 ///
 /// [std-unstable]: https://rustc-dev-guide.rust-lang.org/stability.html
 ///
@@ -105,4 +107,75 @@ mod unstable;
 #[proc_macro_attribute]
 pub fn unstable(args: TokenStream, input: TokenStream) -> TokenStream {
     unstable_macro(args.into(), input.into()).into()
+}
+
+/// Mark an API as stable.
+///
+/// You can apply this attribute to an item in your public API that you would like to expose to
+/// users, and are ready to make a stability guarantee for. This is useful when you have finished
+/// testing and designing an API and are ready to commit to its design and stability.
+///
+/// This attribute does the following things to annotated items:
+///
+/// - Appends a "Stability" section to the item's documentation that notes that the item is stable
+///   and indicates the version at which it was stabilized.
+///
+/// # Arguments
+///
+/// The `stable` attribute supports optional arguments that can be passed to control its behavior.
+///
+/// - `since`: the version at which the item was stabilized. This should be a string that follows
+///   the [Semantic Versioning](https://semver.org) convention. If not specified, the item will be
+///   marked as stable with no version information.
+/// - `issue`: a link or reference to a tracking issue for the stabilized feature. This will be
+///   included in the item's documentation.
+///
+/// # Examples
+///
+/// We can apply the attribute to a public function like so:
+///
+/// ```
+/// /// This function does something really risky!
+/// ///
+/// /// Don't use it yet!
+/// #[instability::stable(since = "v1.0.0")]
+/// pub fn stable_function() {
+///     unimplemented!()
+/// }
+/// ```
+///
+/// This will essentially be expanded to the following:
+///
+/// ```
+/// /// This function does something really risky!
+/// ///
+/// /// Don't use it yet!
+/// ///
+/// /// # Stability
+/// ///
+/// /// This API was stabilized in version 1.0.0.
+/// pub fn stable_function() {
+///     unimplemented!()
+/// }
+/// ```
+///
+/// Applying this attribute to non-`pub` items is pointless and does nothing.
+///
+/// # Panics
+///
+/// This macro will panic if applied to an unsupported item type.
+///
+/// # Limitations
+///
+/// This attribute does not change the visibility of the annotated item. You should ensure that the
+/// item's visibility is set to `pub` if you want it to be part of your crate's public API.
+///
+/// # See also
+///
+/// - The [`unstable`] attribute for marking an API as unstable.
+///
+/// [`unstable`]: macro@unstable
+#[proc_macro_attribute]
+pub fn stable(args: TokenStream, input: TokenStream) -> TokenStream {
+    stable_macro(args.into(), input.into()).into()
 }
