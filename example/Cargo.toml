@@ -12,3 +12,7 @@ unstable-risky-struct = []
 
 [dependencies]
 instability = { path = "../" }
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

@@ -26,7 +26,7 @@ pub fn unstable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
             Item::Const(item_const) => unstable_attribute.expand(item_const),
             Item::Static(item_static) => unstable_attribute.expand(item_static),
             Item::Use(item_use) => unstable_attribute.expand(item_use),
-            item => panic!("unsupported item type {item:?}"),
+            _ => panic!("unsupported item type"),
         },
         Err(err) => return TokenStream::from(Error::from(err).write_errors()),
     }
@@ -75,10 +75,11 @@ impl UnstableAttribute {
         hidden_item.set_visibility(parse_quote! { pub(crate) });
 
         TokenStream::from(quote! {
-            #[cfg(feature = #feature_flag)]
+            #[cfg(any(doc, feature = #feature_flag))]
+            #[cfg_attr(docsrs, doc(cfg(feature = #feature_flag)))]
             #item
 
-            #[cfg(not(feature = #feature_flag))]
+            #[cfg(not(any(doc, feature = #feature_flag)))]
             #[allow(dead_code)]
             #hidden_item
         })
