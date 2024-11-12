@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.3](https://github.com/ratatui/instability/compare/instability-v0.3.2...instability-v0.3.3) - 2024-11-12
+
+### Added
+
+- add stable macro ([#14](https://github.com/ratatui/instability/pull/14))
+- use doc(cfg)
+
+### Fixed
+
+- tests ([#13](https://github.com/ratatui/instability/pull/13))
+- change master to main in lib.rs
+
+### Other
+
+- bump msrv to 1.63
+- use proc_macro2 and add tests
+- use darling instead of manual parsing for better error messages on attributes
+
 ## [0.3.2](https://github.com/ratatui-org/instability/compare/instability-v0.3.1...instability-v0.3.2) - 2024-06-27
 
 ### Fixed
