@@ -5,7 +5,7 @@ Rust API stability attributes for the rest of us.
 [![Crates.io](https://img.shields.io/crates/v/instability.svg)](https://crates.io/crates/instability)
 [![Documentation](https://docs.rs/instability/badge.svg)][documentation]
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
-![Minimum supported Rust version](https://img.shields.io/badge/rustc-1.61+-yellow.svg)
+![Minimum supported Rust version](https://img.shields.io/badge/rustc-1.63+-yellow.svg)
 [![Build](https://github.com/ratatui-org/instability/workflows/Check/badge.svg)](https://github.com/ratatui-org/instability/actions)
 [![Build](https://github.com/ratatui-org/instability/workflows/Test/badge.svg)](https://github.com/ratatui-org/instability/actions)
 

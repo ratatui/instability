@@ -7,6 +7,7 @@
 /// A stable type alias
 ///
 /// This type alias is stable
+#[instability::stable(since = "v1.0.0")]
 pub type StableTypeAlias = u8;
 
 /// An unstable type alias
@@ -18,6 +19,7 @@ pub type UnstableTypeAlias = u8;
 /// A stable constant
 ///
 /// This constant is stable
+#[instability::stable(since = "v1.0.0")]
 pub const STABLE_CONSTANT: u8 = 42;
 
 /// An unstable constant
@@ -29,6 +31,7 @@ pub const UNSTABLE_CONSTANT: u8 = 42;
 /// A stable static
 ///
 /// This static is stable
+#[instability::stable(since = "v1.0.0")]
 pub static STABLE_STATIC: u8 = 42;
 
 /// An unstable static
@@ -40,6 +43,7 @@ pub static UNSTABLE_STATIC: u8 = 42;
 /// A stable function
 ///
 /// This function is stable
+#[instability::stable(since = "v1.0.0")]
 pub fn stable_function() {
     unimplemented!()
 }
@@ -55,6 +59,7 @@ pub fn unstable_function() {
 /// A stable struct
 ///
 /// This struct is stable
+#[instability::stable(since = "v1.0.0")]
 pub struct StableStruct {
     pub x: u8,
 }
@@ -71,6 +76,7 @@ impl StableStruct {
     /// A stable method
     ///
     /// This method is stable
+    #[instability::stable(since = "v1.0.0")]
     pub fn stable_method(&self) {
         unimplemented!()
     }
@@ -100,6 +106,7 @@ impl UnstableStruct {
         unreachable_pub,
         // reason = "The unstable macros cannot make the method pub(crate)"
     )]
+    #[instability::stable(since = "v1.0.0")]
     pub fn stable_method(&self) {
         unimplemented!()
     }
@@ -116,6 +123,7 @@ pub struct UnstableStructWithIssue {
 /// A stable trait
 ///
 /// This trait is stable
+#[instability::stable(since = "v1.0.0")]
 pub trait StableTrait {
     /// A stable trait method
     ///
@@ -155,6 +163,7 @@ pub trait UnstableTrait {
 /// A stable enum
 ///
 /// This enum is stable.
+#[instability::stable(since = "v1.0.0")]
 pub enum StableEnum {
     /// An enum variant
     ///
@@ -182,6 +191,7 @@ pub enum UnstableEnum {
 /// A stable module
 ///
 /// This module is stable.
+#[instability::stable(since = "v1.0.0")]
 pub mod stable {
     /// A stable function
     ///
@@ -207,6 +217,7 @@ pub mod unstable {
     /// A stable function
     ///
     /// This function is stable.
+    #[instability::stable(since = "v1.0.0")]
     pub fn stable_function() {
         unimplemented!()
     }
