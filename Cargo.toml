@@ -8,7 +8,7 @@ repository = "https://github.com/ratatui-org/instability"
 documentation = "https://docs.rs/instability/"
 readme = "README.md"
 edition = "2021"
-rust-version = "1.61"
+rust-version = "1.63"
 
 [dependencies]
 darling = "0.20.10"
