@@ -12,6 +12,9 @@ rust-version = "1.61"
 
 [dependencies]
 darling = "0.20.10"
+indoc = "2.0.5"
+pretty_assertions = "1.4.1"
+proc-macro2 = "1.0.89"
 quote = "1.0.26"
 syn = { version = "2", features = ["derive", "full"] }
 

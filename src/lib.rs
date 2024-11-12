@@ -18,10 +18,10 @@
 //! [`instability-example`]: https://github.com/ratatui-org/instability/tree/main/example
 //! [`unstable`]: macro@unstable
 
-use darling::{ast::NestedMeta, Error, FromMeta};
 use proc_macro::TokenStream;
-use syn::{parse_macro_input, Item};
+use unstable::unstable_macro;
 
+mod item_like;
 mod unstable;
 
 /// Mark an API as unstable.
@@ -104,24 +104,5 @@ mod unstable;
 /// ```
 #[proc_macro_attribute]
 pub fn unstable(args: TokenStream, input: TokenStream) -> TokenStream {
-    let attributes = match NestedMeta::parse_meta_list(args.into()) {
-        Ok(attributes) => attributes,
-        Err(err) => return TokenStream::from(Error::from(err).write_errors()),
-    };
-    let attributes = match unstable::UnstableAttribute::from_list(&attributes) {
-        Ok(attributes) => attributes,
-        Err(err) => return TokenStream::from(err.write_errors()),
-    };
-    match parse_macro_input!(input as Item) {
-        Item::Type(item_type) => attributes.expand(item_type),
-        Item::Enum(item_enum) => attributes.expand(item_enum),
-        Item::Struct(item_struct) => attributes.expand(item_struct),
-        Item::Fn(item_fn) => attributes.expand(item_fn),
-        Item::Mod(item_mod) => attributes.expand(item_mod),
-        Item::Trait(item_trait) => attributes.expand(item_trait),
-        Item::Const(item_const) => attributes.expand(item_const),
-        Item::Static(item_static) => attributes.expand(item_static),
-        Item::Use(item_use) => attributes.expand(item_use),
-        _ => panic!("unsupported item type"),
-    }
+    unstable_macro(args.into(), input.into()).into()
 }
