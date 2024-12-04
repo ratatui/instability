@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Added
+
+- Allow placing `instability` and `stability` on `impl` blocks
+
 ## [0.3.3](https://github.com/ratatui/instability/compare/instability-v0.3.2...instability-v0.3.3) - 2024-11-12
 
 ### Added

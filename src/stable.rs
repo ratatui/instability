@@ -2,9 +2,9 @@ use darling::{ast::NestedMeta, Error, FromMeta};
 use indoc::formatdoc;
 use proc_macro2::TokenStream;
 use quote::ToTokens;
-use syn::{parse_quote, Item};
+use syn::{parse_quote, Item, ItemImpl};
 
-use crate::item_like::ItemLike;
+use crate::item_like::{ItemLike, Stability};
 
 pub fn stable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
     let attributes = match NestedMeta::parse_meta_list(args) {
@@ -26,6 +26,7 @@ pub fn stable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
             Item::Const(item_const) => unstable_attribute.expand(item_const),
             Item::Static(item_static) => unstable_attribute.expand(item_static),
             Item::Use(item_use) => unstable_attribute.expand(item_use),
+            Item::Impl(item_impl) => unstable_attribute.expand_impl(item_impl),
             _ => panic!("unsupported item type"),
         },
         Err(err) => return TokenStream::from(Error::from(err).write_errors()),
@@ -47,6 +48,29 @@ impl StableAttribute {
             // We only care about public items.
             return item.into_token_stream().into();
         }
+        let doc = if let Some(ref version) = self.since {
+            formatdoc! {"
+                # Stability
+
+                This API was stabilized in version {}.",
+                version.trim_start_matches('v')
+            }
+        } else {
+            formatdoc! {"
+                # Stability
+
+                This API is stable."}
+        };
+        item.push_attr(parse_quote! { #[doc = #doc] });
+
+        if let Some(issue) = &self.issue {
+            let doc = format!("The tracking issue is: `{}`.", issue);
+            item.push_attr(parse_quote! { #[doc = #doc] });
+        }
+        item.into_token_stream()
+    }
+
+    pub fn expand_impl(&self, mut item: ItemImpl) -> TokenStream {
         let doc = if let Some(ref version) = self.since {
             formatdoc! {"
                 # Stability

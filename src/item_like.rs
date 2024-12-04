@@ -1,11 +1,13 @@
 use syn::Visibility;
 
-pub trait ItemLike {
+pub trait Stability {
     #[allow(unused)]
     fn attrs(&self) -> &[syn::Attribute];
 
     fn push_attr(&mut self, attr: syn::Attribute);
+}
 
+pub trait ItemLike: Stability {
     fn visibility(&self) -> &Visibility;
 
     fn set_visibility(&mut self, visibility: Visibility);
@@ -18,7 +20,7 @@ pub trait ItemLike {
 macro_rules! impl_has_visibility {
 ($($ty:ty),+ $(,)?) => {
     $(
-        impl ItemLike for $ty {
+        impl Stability for $ty {
             fn attrs(&self) -> &[syn::Attribute] {
                 &self.attrs
             }
@@ -26,7 +28,9 @@ macro_rules! impl_has_visibility {
             fn push_attr(&mut self, attr: syn::Attribute) {
                 self.attrs.push(attr);
             }
+        }
 
+        impl ItemLike for $ty {
             fn visibility(&self) -> &Visibility {
                 &self.vis
             }
@@ -50,7 +54,7 @@ impl_has_visibility!(
     syn::ItemUse,
 );
 
-impl ItemLike for syn::ItemStruct {
+impl Stability for syn::ItemStruct {
     fn attrs(&self) -> &[syn::Attribute] {
         &self.attrs
     }
@@ -58,7 +62,9 @@ impl ItemLike for syn::ItemStruct {
     fn push_attr(&mut self, attr: syn::Attribute) {
         self.attrs.push(attr);
     }
+}
 
+impl ItemLike for syn::ItemStruct {
     fn visibility(&self) -> &Visibility {
         &self.vis
     }
@@ -72,5 +78,15 @@ impl ItemLike for syn::ItemStruct {
             .for_each(|field| field.vis = visibility.clone());
 
         self.vis = visibility;
+    }
+}
+
+impl Stability for syn::ItemImpl {
+    fn attrs(&self) -> &[syn::Attribute] {
+        &self.attrs
+    }
+
+    fn push_attr(&mut self, attr: syn::Attribute) {
+        self.attrs.push(attr);
     }
 }

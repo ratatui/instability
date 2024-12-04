@@ -38,6 +38,7 @@ mod unstable;
 /// - Changes the visibility of the item from `pub` to `pub(crate)` unless a certain crate feature
 ///   is enabled. This ensures that internal code within the crate can always use the item, but
 ///   downstream consumers cannot access it unless they opt-in to the unstable API.
+/// - Annotated `impl` blocks will instead be removed.
 /// - Changes the Visibility of certain child items of the annotated item (such as struct fields) to
 ///   match the item's visibility. Children that are not public will not be affected.
 /// - Appends an "Stability" section to the item's documentation that notes that the item is
@@ -102,6 +103,20 @@ mod unstable;
 /// #[cfg(not(feature = "unstable-risky-function"))]
 /// pub(crate) fn risky_function() {
 ///     unimplemented!()
+/// }
+/// ```
+///
+/// We can also apply the attribute to an `impl` block like so:
+///
+/// ```
+/// /// This structure is responsible for bar.
+/// pub struct Foo;
+///
+/// #[instability::unstable(feature = "unstable-dependency")]
+/// impl Default for Foo {
+///     fn default() -> Self {
+///         unimplemented!()
+///     }
 /// }
 /// ```
 #[proc_macro_attribute]

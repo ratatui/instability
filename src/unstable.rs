@@ -2,9 +2,9 @@ use darling::{ast::NestedMeta, Error, FromMeta};
 use indoc::formatdoc;
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{parse_quote, Item};
+use syn::{parse_quote, Item, ItemImpl};
 
-use crate::item_like::ItemLike;
+use crate::item_like::{ItemLike, Stability};
 
 pub fn unstable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
     let attributes = match NestedMeta::parse_meta_list(args) {
@@ -26,6 +26,7 @@ pub fn unstable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
             Item::Const(item_const) => unstable_attribute.expand(item_const),
             Item::Static(item_static) => unstable_attribute.expand(item_static),
             Item::Use(item_use) => unstable_attribute.expand(item_use),
+            Item::Impl(item_impl) => unstable_attribute.expand_impl(item_impl),
             _ => panic!("unsupported item type"),
         },
         Err(err) => return TokenStream::from(Error::from(err).write_errors()),
@@ -82,6 +83,28 @@ impl UnstableAttribute {
             #[cfg(not(any(doc, feature = #feature_flag)))]
             #[allow(dead_code)]
             #hidden_item
+        })
+    }
+
+    pub fn expand_impl(&self, mut item: ItemImpl) -> TokenStream {
+        let feature_flag = self.feature_flag();
+        let doc = formatdoc! {"
+            # Stability
+
+            **This API is marked as unstable** and is only available when the `{feature_flag}`
+            crate feature is enabled. This comes with no stability guarantees, and could be changed
+            or removed at any time."};
+        item.push_attr(parse_quote! { #[doc = #doc] });
+
+        if let Some(issue) = &self.issue {
+            let doc = format!("The tracking issue is: `{}`.", issue);
+            item.push_attr(parse_quote! { #[doc = #doc] });
+        }
+
+        TokenStream::from(quote! {
+            #[cfg(any(doc, feature = #feature_flag))]
+            #[cfg_attr(docsrs, doc(cfg(feature = #feature_flag)))]
+            #item
         })
     }
 }

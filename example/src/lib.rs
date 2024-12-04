@@ -140,6 +140,9 @@ pub trait StableTrait {
     // fn unstable_trait_method(&self);
 }
 
+#[instability::stable(since = "v1.0.0")]
+impl StableTrait for StableStruct {}
+
 /// An unstable trait
 ///
 /// This trait is unstable
@@ -159,6 +162,9 @@ pub trait UnstableTrait {
     // #[instability::unstable(feature = "trait-method")]
     // fn unstable_trait_method(&self);
 }
+
+#[instability::unstable(feature = "trait")]
+impl UnstableTrait for StableStruct {}
 
 /// A stable enum
 ///
