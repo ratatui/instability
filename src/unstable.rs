@@ -395,4 +395,19 @@ mod tests {
         };
         assert_eq!(tokens.to_string(), expected.to_string());
     }
+
+    #[test]
+    fn expand_impl_block() {
+        let item: syn::ItemImpl = parse_quote! {
+            impl Default for crate::foo::Foo {}
+        };
+        let tokens = UnstableAttribute::default().expand_impl(item);
+        let expected = quote! {
+            #[cfg(any(doc, feature = "unstable"))]
+            #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
+            #[doc = #DEFAULT_DOC]
+            impl Default for crate::foo::Foo {}
+        };
+        assert_eq!(tokens.to_string(), expected.to_string());
+    }
 }
