@@ -2,7 +2,7 @@ use darling::{ast::NestedMeta, Error, FromMeta};
 use indoc::formatdoc;
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{parse_quote, Item, ItemImpl};
+use syn::{parse_quote, Item};
 
 use crate::item_like::{ItemLike, Stability};
 
@@ -47,30 +47,14 @@ pub struct UnstableAttribute {
 }
 
 impl UnstableAttribute {
-    fn feature_flag(&self) -> String {
-        self.feature
-            .as_deref()
-            .map_or(String::from("unstable"), |name| format!("unstable-{name}"))
-    }
-
     pub fn expand(&self, mut item: impl ItemLike + ToTokens + Clone) -> TokenStream {
         if !item.is_public() {
             // We only care about public items.
             return item.into_token_stream().into();
         }
+
         let feature_flag = self.feature_flag();
-        let doc = formatdoc! {"
-            # Stability
-
-            **This API is marked as unstable** and is only available when the `{feature_flag}`
-            crate feature is enabled. This comes with no stability guarantees, and could be changed
-            or removed at any time."};
-        item.push_attr(parse_quote! { #[doc = #doc] });
-
-        if let Some(issue) = &self.issue {
-            let doc = format!("The tracking issue is: `{}`.", issue);
-            item.push_attr(parse_quote! { #[doc = #doc] });
-        }
+        self.add_doc(&mut item);
 
         let mut hidden_item = item.clone();
         hidden_item.set_visibility(parse_quote! { pub(crate) });
@@ -86,7 +70,17 @@ impl UnstableAttribute {
         })
     }
 
-    pub fn expand_impl(&self, mut item: ItemImpl) -> TokenStream {
+    pub fn expand_impl(&self, mut item: impl Stability + ToTokens) -> TokenStream {
+        let feature_flag = self.feature_flag();
+        self.add_doc(&mut item);
+        TokenStream::from(quote! {
+            #[cfg(any(doc, feature = #feature_flag))]
+            #[cfg_attr(docsrs, doc(cfg(feature = #feature_flag)))]
+            #item
+        })
+    }
+
+    fn add_doc(&self, item: &mut impl Stability) {
         let feature_flag = self.feature_flag();
         let doc = formatdoc! {"
             # Stability
@@ -100,12 +94,12 @@ impl UnstableAttribute {
             let doc = format!("The tracking issue is: `{}`.", issue);
             item.push_attr(parse_quote! { #[doc = #doc] });
         }
+    }
 
-        TokenStream::from(quote! {
-            #[cfg(any(doc, feature = #feature_flag))]
-            #[cfg_attr(docsrs, doc(cfg(feature = #feature_flag)))]
-            #item
-        })
+    fn feature_flag(&self) -> String {
+        self.feature
+            .as_deref()
+            .map_or(String::from("unstable"), |name| format!("unstable-{name}"))
     }
 }
 #[cfg(test)]

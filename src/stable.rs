@@ -2,7 +2,7 @@ use darling::{ast::NestedMeta, Error, FromMeta};
 use indoc::formatdoc;
 use proc_macro2::TokenStream;
 use quote::ToTokens;
-use syn::{parse_quote, Item, ItemImpl};
+use syn::{parse_quote, Item};
 
 use crate::item_like::{ItemLike, Stability};
 
@@ -43,34 +43,15 @@ pub struct StableAttribute {
 }
 
 impl StableAttribute {
-    pub fn expand(&self, mut item: impl ItemLike + ToTokens + Clone) -> TokenStream {
+    pub fn expand(&self, item: impl ItemLike + ToTokens + Clone) -> TokenStream {
         if !item.is_public() {
             // We only care about public items.
             return item.into_token_stream().into();
         }
-        let doc = if let Some(ref version) = self.since {
-            formatdoc! {"
-                # Stability
-
-                This API was stabilized in version {}.",
-                version.trim_start_matches('v')
-            }
-        } else {
-            formatdoc! {"
-                # Stability
-
-                This API is stable."}
-        };
-        item.push_attr(parse_quote! { #[doc = #doc] });
-
-        if let Some(issue) = &self.issue {
-            let doc = format!("The tracking issue is: `{}`.", issue);
-            item.push_attr(parse_quote! { #[doc = #doc] });
-        }
-        item.into_token_stream()
+        self.expand_impl(item)
     }
 
-    pub fn expand_impl(&self, mut item: ItemImpl) -> TokenStream {
+    pub fn expand_impl(&self, mut item: impl Stability + ToTokens) -> TokenStream {
         let doc = if let Some(ref version) = self.since {
             formatdoc! {"
                 # Stability
