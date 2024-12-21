@@ -1,8 +1,7 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![allow(dead_code)]
 
-//! This is an example library demonstrating various attributes from the
-//! stability crate.
+//! This is an example library demonstrating various attributes from the [`instability`] crate.
 
 /// A stable type alias
 ///

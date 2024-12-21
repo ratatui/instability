@@ -1,17 +1,31 @@
 [package]
 name = "instability-example"
-version = "0.0.0"
 description = "Example crate demonstrating instablity usage."
-authors = ["Stephen M. Coakley <me@stephencoakley.com>", "Joshka"]
-edition = "2021"
-publish = false
+documentation = "https://docs.rs/instability-example/"
+authors.workspace = true
+license.workspace = true
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
 
 [features]
-unstable-risky-function = []
-unstable-risky-struct = []
+default = []
+unstable-enum = []
+unstable-constant = []
+unstable-function = []
+unstable-method = []
+unstable-module = []
+unstable-private-function = []
+unstable-reexport = []
+unstable-static = []
+unstable-struct-with-issue = []
+unstable-struct = []
+unstable-trait = []
+unstable-type-alias = []
 
 [dependencies]
-instability = { path = "../" }
+instability.workspace = true
 
 [package.metadata.docs.rs]
 all-features = true
