@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [0.3.4](https://github.com/ratatui/instability/compare/instability-v0.3.3...instability-v0.3.4) - 2024-12-21
+
+### Added
+
+- Allow marking impl blocks unstable/stable (#15)
+
 ### Added
 
 - Allow placing `instability` and `stability` on `impl` blocks ([#15](https://github.com/ratatui/instability/pull/15))
