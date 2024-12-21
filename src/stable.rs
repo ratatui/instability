@@ -4,7 +4,7 @@ use proc_macro2::TokenStream;
 use quote::ToTokens;
 use syn::{parse_quote, Item};
 
-use crate::item_like::ItemLike;
+use crate::item_like::{ItemLike, Stability};
 
 pub fn stable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
     let attributes = match NestedMeta::parse_meta_list(args) {
@@ -26,6 +26,7 @@ pub fn stable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
             Item::Const(item_const) => unstable_attribute.expand(item_const),
             Item::Static(item_static) => unstable_attribute.expand(item_static),
             Item::Use(item_use) => unstable_attribute.expand(item_use),
+            Item::Impl(item_impl) => unstable_attribute.expand_impl(item_impl),
             _ => panic!("unsupported item type"),
         },
         Err(err) => return TokenStream::from(Error::from(err).write_errors()),
@@ -42,11 +43,15 @@ pub struct StableAttribute {
 }
 
 impl StableAttribute {
-    pub fn expand(&self, mut item: impl ItemLike + ToTokens + Clone) -> TokenStream {
+    pub fn expand(&self, item: impl ItemLike + ToTokens + Clone) -> TokenStream {
         if !item.is_public() {
             // We only care about public items.
             return item.into_token_stream().into();
         }
+        self.expand_impl(item)
+    }
+
+    pub fn expand_impl(&self, mut item: impl Stability + ToTokens) -> TokenStream {
         let doc = if let Some(ref version) = self.since {
             formatdoc! {"
                 # Stability
@@ -277,6 +282,19 @@ mod tests {
         let expected = quote! {
             #[doc = #STABLE_DOC]
             pub use crate::foo::bar;
+        };
+        assert_eq!(tokens.to_string(), expected.to_string());
+    }
+
+    #[test]
+    fn expand_impl_block() {
+        let item: syn::ItemImpl = parse_quote! {
+            impl Default for crate::foo::Foo {}
+        };
+        let tokens = StableAttribute::default().expand_impl(item);
+        let expected = quote! {
+            #[doc = #STABLE_DOC]
+            impl Default for crate::foo::Foo {}
         };
         assert_eq!(tokens.to_string(), expected.to_string());
     }

@@ -4,7 +4,7 @@ use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::{parse_quote, Item};
 
-use crate::item_like::ItemLike;
+use crate::item_like::{ItemLike, Stability};
 
 pub fn unstable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
     let attributes = match NestedMeta::parse_meta_list(args) {
@@ -26,6 +26,7 @@ pub fn unstable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
             Item::Const(item_const) => unstable_attribute.expand(item_const),
             Item::Static(item_static) => unstable_attribute.expand(item_static),
             Item::Use(item_use) => unstable_attribute.expand(item_use),
+            Item::Impl(item_impl) => unstable_attribute.expand_impl(item_impl),
             _ => panic!("unsupported item type"),
         },
         Err(err) => return TokenStream::from(Error::from(err).write_errors()),
@@ -46,30 +47,14 @@ pub struct UnstableAttribute {
 }
 
 impl UnstableAttribute {
-    fn feature_flag(&self) -> String {
-        self.feature
-            .as_deref()
-            .map_or(String::from("unstable"), |name| format!("unstable-{name}"))
-    }
-
     pub fn expand(&self, mut item: impl ItemLike + ToTokens + Clone) -> TokenStream {
         if !item.is_public() {
             // We only care about public items.
             return item.into_token_stream().into();
         }
+
         let feature_flag = self.feature_flag();
-        let doc = formatdoc! {"
-            # Stability
-
-            **This API is marked as unstable** and is only available when the `{feature_flag}`
-            crate feature is enabled. This comes with no stability guarantees, and could be changed
-            or removed at any time."};
-        item.push_attr(parse_quote! { #[doc = #doc] });
-
-        if let Some(issue) = &self.issue {
-            let doc = format!("The tracking issue is: `{}`.", issue);
-            item.push_attr(parse_quote! { #[doc = #doc] });
-        }
+        self.add_doc(&mut item);
 
         let mut hidden_item = item.clone();
         hidden_item.set_visibility(parse_quote! { pub(crate) });
@@ -83,6 +68,38 @@ impl UnstableAttribute {
             #[allow(dead_code)]
             #hidden_item
         })
+    }
+
+    pub fn expand_impl(&self, mut item: impl Stability + ToTokens) -> TokenStream {
+        let feature_flag = self.feature_flag();
+        self.add_doc(&mut item);
+        TokenStream::from(quote! {
+            #[cfg(any(doc, feature = #feature_flag))]
+            #[cfg_attr(docsrs, doc(cfg(feature = #feature_flag)))]
+            #item
+        })
+    }
+
+    fn add_doc(&self, item: &mut impl Stability) {
+        let feature_flag = self.feature_flag();
+        let doc = formatdoc! {"
+            # Stability
+
+            **This API is marked as unstable** and is only available when the `{feature_flag}`
+            crate feature is enabled. This comes with no stability guarantees, and could be changed
+            or removed at any time."};
+        item.push_attr(parse_quote! { #[doc = #doc] });
+
+        if let Some(issue) = &self.issue {
+            let doc = format!("The tracking issue is: `{}`.", issue);
+            item.push_attr(parse_quote! { #[doc = #doc] });
+        }
+    }
+
+    fn feature_flag(&self) -> String {
+        self.feature
+            .as_deref()
+            .map_or(String::from("unstable"), |name| format!("unstable-{name}"))
     }
 }
 #[cfg(test)]
@@ -369,6 +386,21 @@ mod tests {
             #[allow(dead_code)]
             #[doc = #DEFAULT_DOC]
             pub(crate) use crate::foo::bar;
+        };
+        assert_eq!(tokens.to_string(), expected.to_string());
+    }
+
+    #[test]
+    fn expand_impl_block() {
+        let item: syn::ItemImpl = parse_quote! {
+            impl Default for crate::foo::Foo {}
+        };
+        let tokens = UnstableAttribute::default().expand_impl(item);
+        let expected = quote! {
+            #[cfg(any(doc, feature = "unstable"))]
+            #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
+            #[doc = #DEFAULT_DOC]
+            impl Default for crate::foo::Foo {}
         };
         assert_eq!(tokens.to_string(), expected.to_string());
     }
