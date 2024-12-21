@@ -9,11 +9,11 @@ use crate::item_like::{ItemLike, Stability};
 pub fn stable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
     let attributes = match NestedMeta::parse_meta_list(args) {
         Ok(attributes) => attributes,
-        Err(err) => return TokenStream::from(Error::from(err).write_errors()),
+        Err(err) => return Error::from(err).write_errors(),
     };
     let unstable_attribute = match StableAttribute::from_list(&attributes) {
         Ok(attributes) => attributes,
-        Err(err) => return TokenStream::from(err.write_errors()),
+        Err(err) => return err.write_errors(),
     };
     match syn::parse2::<Item>(input) {
         Ok(item) => match item {
@@ -29,7 +29,7 @@ pub fn stable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
             Item::Impl(item_impl) => unstable_attribute.expand_impl(item_impl),
             _ => panic!("unsupported item type"),
         },
-        Err(err) => return TokenStream::from(Error::from(err).write_errors()),
+        Err(err) => Error::from(err).write_errors(),
     }
 }
 
@@ -46,7 +46,7 @@ impl StableAttribute {
     pub fn expand(&self, item: impl ItemLike + ToTokens + Clone) -> TokenStream {
         if !item.is_public() {
             // We only care about public items.
-            return item.into_token_stream().into();
+            return item.into_token_stream();
         }
         self.expand_impl(item)
     }

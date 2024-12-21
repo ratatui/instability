@@ -9,11 +9,11 @@ use crate::item_like::{ItemLike, Stability};
 pub fn unstable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
     let attributes = match NestedMeta::parse_meta_list(args) {
         Ok(attributes) => attributes,
-        Err(err) => return TokenStream::from(Error::from(err).write_errors()),
+        Err(err) => return Error::from(err).write_errors(),
     };
     let unstable_attribute = match UnstableAttribute::from_list(&attributes) {
         Ok(attributes) => attributes,
-        Err(err) => return TokenStream::from(err.write_errors()),
+        Err(err) => return err.write_errors(),
     };
     match syn::parse2::<Item>(input) {
         Ok(item) => match item {
@@ -29,7 +29,7 @@ pub fn unstable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
             Item::Impl(item_impl) => unstable_attribute.expand_impl(item_impl),
             _ => panic!("unsupported item type"),
         },
-        Err(err) => return TokenStream::from(Error::from(err).write_errors()),
+        Err(err) => Error::from(err).write_errors(),
     }
 }
 
@@ -50,7 +50,7 @@ impl UnstableAttribute {
     pub fn expand(&self, mut item: impl ItemLike + ToTokens + Clone) -> TokenStream {
         if !item.is_public() {
             // We only care about public items.
-            return item.into_token_stream().into();
+            return item.into_token_stream();
         }
 
         let feature_flag = self.feature_flag();
@@ -59,7 +59,7 @@ impl UnstableAttribute {
         let mut hidden_item = item.clone();
         hidden_item.set_visibility(parse_quote! { pub(crate) });
 
-        TokenStream::from(quote! {
+        quote! {
             #[cfg(any(doc, feature = #feature_flag))]
             #[cfg_attr(docsrs, doc(cfg(feature = #feature_flag)))]
             #item
@@ -67,17 +67,17 @@ impl UnstableAttribute {
             #[cfg(not(any(doc, feature = #feature_flag)))]
             #[allow(dead_code)]
             #hidden_item
-        })
+        }
     }
 
     pub fn expand_impl(&self, mut item: impl Stability + ToTokens) -> TokenStream {
         let feature_flag = self.feature_flag();
         self.add_doc(&mut item);
-        TokenStream::from(quote! {
+        quote! {
             #[cfg(any(doc, feature = #feature_flag))]
             #[cfg_attr(docsrs, doc(cfg(feature = #feature_flag)))]
             #item
-        })
+        }
     }
 
     fn add_doc(&self, item: &mut impl Stability) {
