@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [0.3.6](https://github.com/ratatui/instability/compare/instability-v0.3.5...instability-v0.3.6) - 2025-01-04
+
+### Other
+
+- Move pretty_assertions to dev-dependencies ([#19](https://github.com/ratatui/instability/pull/19))
+
 ## [0.3.5](https://github.com/ratatui/instability/compare/instability-v0.3.4...instability-v0.3.5) - 2024-12-21
 
 ### Other
