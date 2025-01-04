@@ -28,10 +28,12 @@ readme = "README.md"
 [dependencies]
 darling = "0.20.10"
 indoc = "2.0.5"
-pretty_assertions = "1.4.1"
 proc-macro2 = "1.0.92"
 quote = "1.0.37"
 syn = { version = "2.0.90", features = ["derive", "full"] }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
 
 [lib]
 proc-macro = true
