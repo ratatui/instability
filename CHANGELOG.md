@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [0.3.7](https://github.com/ratatui/instability/compare/instability-v0.3.6...instability-v0.3.7) - 2025-01-10
+
+### Other
+
+- Add #[allow(unused_imports)] lint to unstable reexports ([#21](https://github.com/ratatui/instability/pull/21))
+
 ## [0.3.6](https://github.com/ratatui/instability/compare/instability-v0.3.5...instability-v0.3.6) - 2025-01-04
 
 ### Other
