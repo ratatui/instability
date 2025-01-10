@@ -4,8 +4,6 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-- Apply `#[allow(unused_imports)]` to unstable reexports.
-
 ## [0.3.6](https://github.com/ratatui/instability/compare/instability-v0.3.5...instability-v0.3.6) - 2025-01-04
 
 ### Other
