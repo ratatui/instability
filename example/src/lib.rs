@@ -265,7 +265,6 @@ pub use private::private_function as stable_reexport;
 ///
 /// This re-export is unstable.
 #[instability::unstable(feature = "reexport")]
-#[allow(unused_imports)]
 pub use private::private_function as unstable_reexport;
 
 // This does not work as the unstable_private_function is only public within the crate and cannot
@@ -281,5 +280,4 @@ pub use private::private_function as unstable_reexport;
 /// section of the unstable_private_function, which will look odd. Consider avoiding re-exporting
 /// unstable items like this, and instead only mark the re-export itself as unstable.
 #[instability::unstable(feature = "reexport")]
-#[allow(unused_imports)]
 pub use private::unstable_private_function as unstable_unstable_export;

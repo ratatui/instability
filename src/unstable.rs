@@ -59,13 +59,18 @@ impl UnstableAttribute {
         let mut hidden_item = item.clone();
         hidden_item.set_visibility(parse_quote! { pub(crate) });
 
+        let allows = item
+            .allowed_lints()
+            .into_iter()
+            .map(|ident| quote! { #[allow(#ident)] });
+
         quote! {
             #[cfg(any(doc, feature = #feature_flag))]
             #[cfg_attr(docsrs, doc(cfg(feature = #feature_flag)))]
             #item
 
             #[cfg(not(any(doc, feature = #feature_flag)))]
-            #[allow(dead_code)]
+            #(#allows)*
             #hidden_item
         }
     }
@@ -383,7 +388,7 @@ mod tests {
             pub use crate::foo::bar;
 
             #[cfg(not(any(doc, feature = "unstable")))]
-            #[allow(dead_code)]
+            #[allow(unused_imports)]
             #[doc = #DEFAULT_DOC]
             pub(crate) use crate::foo::bar;
         };
