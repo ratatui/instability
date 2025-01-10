@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.7](https://github.com/ratatui/instability/compare/instability-example-v0.3.6...instability-example-v0.3.7) - 2025-01-10
+
+### Other
+
+- Add #[allow(unused_imports)] lint to unstable reexports ([#21](https://github.com/ratatui/instability/pull/21))
+
 ## [0.3.5](https://github.com/ratatui/instability/compare/instability-example-v0.3.4...instability-example-v0.3.5) - 2024-12-21
 
 ### Added
