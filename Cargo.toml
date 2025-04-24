@@ -35,5 +35,10 @@ syn = { version = "2.0.90", features = ["derive", "full"] }
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 
+[features]
+default = ["document-unstable"]
+
+document-unstable = []
+
 [lib]
 proc-macro = true
