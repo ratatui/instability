@@ -64,13 +64,13 @@ impl UnstableAttribute {
             .into_iter()
             .map(|ident| quote! { #[allow(#ident)] });
 
-        #[cfg(feature = "document-unstable")]
+        #[cfg(not(instability_exclude_unstable_docs))]
         let (cfg, not_cfg) = (
             quote! { #[cfg(any(doc, feature = #feature_flag))] },
             quote! { #[cfg(not(any(doc, feature = #feature_flag)))] },
         );
 
-        #[cfg(not(feature = "document-unstable"))]
+        #[cfg(instability_exclude_unstable_docs)]
         let (cfg, not_cfg) = (
             quote! { #[cfg(feature = #feature_flag)] },
             quote! { #[cfg(not(feature = #feature_flag))] },
@@ -91,10 +91,10 @@ impl UnstableAttribute {
         let feature_flag = self.feature_flag();
         self.add_doc(&mut item);
 
-        #[cfg(feature = "document-unstable")]
+        #[cfg(not(instability_exclude_unstable_docs))]
         let cfg = quote! { #[cfg(any(doc, feature = #feature_flag))] };
 
-        #[cfg(not(feature = "document-unstable"))]
+        #[cfg(instability_exclude_unstable_docs)]
         let cfg = quote! { #[cfg(feature = #feature_flag)] };
 
         quote! {
@@ -165,13 +165,13 @@ mod tests {
     const ISSUE_DOC: &str = "The tracking issue is: `#123`.";
 
     fn cfg_attributes(feature: &str) -> (TokenStream, TokenStream) {
-        #[cfg(feature = "document-unstable")]
+        #[cfg(not(instability_exclude_unstable_docs))]
         return (
             quote! { #[cfg(any(doc, feature = #feature))] },
             quote! { #[cfg(not(any(doc, feature = #feature)))] },
         );
 
-        #[cfg(not(feature = "document-unstable"))]
+        #[cfg(instability_exclude_unstable_docs)]
         return (
             quote! { #[cfg(feature = #feature)] },
             quote! { #[cfg(not(feature = #feature))] },
