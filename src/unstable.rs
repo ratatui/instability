@@ -64,24 +64,24 @@ impl UnstableAttribute {
             .into_iter()
             .map(|ident| quote! { #[allow(#ident)] });
 
-        #[cfg(not(instability_exclude_unstable_docs))]
-        let (cfg, not_cfg) = (
+        #[cfg(not(instability_disable_unstable_docs))]
+        let (cfg_gate_unstable, cfg_gate_stable) = (
             quote! { #[cfg(any(doc, feature = #feature_flag))] },
             quote! { #[cfg(not(any(doc, feature = #feature_flag)))] },
         );
 
-        #[cfg(instability_exclude_unstable_docs)]
-        let (cfg, not_cfg) = (
+        #[cfg(instability_disable_unstable_docs)]
+        let (cfg_gate_unstable, cfg_gate_stable) = (
             quote! { #[cfg(feature = #feature_flag)] },
             quote! { #[cfg(not(feature = #feature_flag))] },
         );
 
         quote! {
-            #cfg
+            #cfg_gate_unstable
             #[cfg_attr(docsrs, doc(cfg(feature = #feature_flag)))]
             #item
 
-            #not_cfg
+            #cfg_gate_stable
             #(#allows)*
             #hidden_item
         }
@@ -91,14 +91,14 @@ impl UnstableAttribute {
         let feature_flag = self.feature_flag();
         self.add_doc(&mut item);
 
-        #[cfg(not(instability_exclude_unstable_docs))]
-        let cfg = quote! { #[cfg(any(doc, feature = #feature_flag))] };
+        #[cfg(not(instability_disable_unstable_docs))]
+        let cfg_gate_unstable = quote! { #[cfg(any(doc, feature = #feature_flag))] };
 
-        #[cfg(instability_exclude_unstable_docs)]
-        let cfg = quote! { #[cfg(feature = #feature_flag)] };
+        #[cfg(instability_disable_unstable_docs)]
+        let cfg_gate_unstable = quote! { #[cfg(feature = #feature_flag)] };
 
         quote! {
-            #cfg
+            #cfg_gate_unstable
             #[cfg_attr(docsrs, doc(cfg(feature = #feature_flag)))]
             #item
         }
@@ -127,7 +127,7 @@ impl UnstableAttribute {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, not(instability_disable_unstable_docs)))]
 mod tests {
     use pretty_assertions::assert_eq;
     use quote::quote;
@@ -164,20 +164,6 @@ mod tests {
     const WITH_FEATURES_DOC: &str = "# Stability\n\n**This API is marked as unstable** and is only available when the `unstable-experimental`\ncrate feature is enabled. This comes with no stability guarantees, and could be changed\nor removed at any time.";
     const ISSUE_DOC: &str = "The tracking issue is: `#123`.";
 
-    fn cfg_attributes(feature: &str) -> (TokenStream, TokenStream) {
-        #[cfg(not(instability_exclude_unstable_docs))]
-        return (
-            quote! { #[cfg(any(doc, feature = #feature))] },
-            quote! { #[cfg(not(any(doc, feature = #feature)))] },
-        );
-
-        #[cfg(instability_exclude_unstable_docs)]
-        return (
-            quote! { #[cfg(feature = #feature)] },
-            quote! { #[cfg(not(feature = #feature))] },
-        );
-    }
-
     #[test]
     fn expand_with_feature() {
         let item: syn::ItemType = parse_quote! { pub type Foo = Bar; };
@@ -186,15 +172,13 @@ mod tests {
             issue: None,
         };
         let tokens = unstable.expand(item);
-
-        let (cfg, not_cfg) = cfg_attributes("unstable-experimental");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable-experimental"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable-experimental")))]
             #[doc = #WITH_FEATURES_DOC]
             pub type Foo = Bar;
 
-            #not_cfg
+            #[cfg(not(any(doc, feature = "unstable-experimental")))]
             #[allow(dead_code)]
             #[doc = #WITH_FEATURES_DOC]
             pub(crate) type Foo = Bar;
@@ -210,16 +194,14 @@ mod tests {
             issue: Some("#123".to_string()),
         };
         let tokens = unstable.expand(item);
-
-        let (cfg, not_cfg) = cfg_attributes("unstable");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
             #[doc = #DEFAULT_DOC]
             #[doc = #ISSUE_DOC]
             pub type Foo = Bar;
 
-            #not_cfg
+            #[cfg(not(any(doc, feature = "unstable")))]
             #[allow(dead_code)]
             #[doc = #DEFAULT_DOC]
             #[doc = #ISSUE_DOC]
@@ -232,15 +214,13 @@ mod tests {
     fn expand_public_type() {
         let item: syn::ItemType = parse_quote! { pub type Foo = Bar; };
         let tokens = UnstableAttribute::default().expand(item);
-
-        let (cfg, not_cfg) = cfg_attributes("unstable");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
             #[doc = #DEFAULT_DOC]
             pub type Foo = Bar;
 
-            #not_cfg
+            #[cfg(not(any(doc, feature = "unstable")))]
             #[allow(dead_code)]
             #[doc = #DEFAULT_DOC]
             pub(crate) type Foo = Bar;
@@ -256,17 +236,15 @@ mod tests {
             }
         };
         let tokens = UnstableAttribute::default().expand(item);
-
-        let (cfg, not_cfg) = cfg_attributes("unstable");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
             #[doc = #DEFAULT_DOC]
             pub struct Foo {
                 pub field: i32,
             }
 
-            #not_cfg
+            #[cfg(not(any(doc, feature = "unstable")))]
             #[allow(dead_code)]
             #[doc = #DEFAULT_DOC]
             pub(crate) struct Foo {
@@ -285,10 +263,8 @@ mod tests {
             }
         };
         let tokens = UnstableAttribute::default().expand(item);
-
-        let (cfg, not_cfg) = cfg_attributes("unstable");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
             #[doc = #DEFAULT_DOC]
             pub enum Foo {
@@ -296,7 +272,7 @@ mod tests {
                 B,
             }
 
-            #not_cfg
+            #[cfg(not(any(doc, feature = "unstable")))]
             #[allow(dead_code)]
             #[doc = #DEFAULT_DOC]
             pub(crate) enum Foo {
@@ -313,15 +289,13 @@ mod tests {
             pub fn foo() {}
         };
         let tokens = UnstableAttribute::default().expand(item);
-
-        let (cfg, not_cfg) = cfg_attributes("unstable");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
             #[doc = #DEFAULT_DOC]
             pub fn foo() {}
 
-            #not_cfg
+            #[cfg(not(any(doc, feature = "unstable")))]
             #[allow(dead_code)]
             #[doc = #DEFAULT_DOC]
             pub(crate) fn foo() {}
@@ -337,17 +311,15 @@ mod tests {
             }
         };
         let tokens = UnstableAttribute::default().expand(item);
-
-        let (cfg, not_cfg) = cfg_attributes("unstable");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
             #[doc = #DEFAULT_DOC]
             pub trait Foo {
                 fn bar(&self);
             }
 
-            #not_cfg
+            #[cfg(not(any(doc, feature = "unstable")))]
             #[allow(dead_code)]
             #[doc = #DEFAULT_DOC]
             pub(crate) trait Foo {
@@ -363,15 +335,13 @@ mod tests {
             pub const FOO: i32 = 42;
         };
         let tokens = UnstableAttribute::default().expand(item);
-
-        let (cfg, not_cfg) = cfg_attributes("unstable");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
             #[doc = #DEFAULT_DOC]
             pub const FOO: i32 = 42;
 
-            #not_cfg
+            #[cfg(not(any(doc, feature = "unstable")))]
             #[allow(dead_code)]
             #[doc = #DEFAULT_DOC]
             pub(crate) const FOO: i32 = 42;
@@ -385,15 +355,13 @@ mod tests {
             pub static FOO: i32 = 42;
         };
         let tokens = UnstableAttribute::default().expand(item);
-
-        let (cfg, not_cfg) = cfg_attributes("unstable");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
             #[doc = #DEFAULT_DOC]
             pub static FOO: i32 = 42;
 
-            #not_cfg
+            #[cfg(not(any(doc, feature = "unstable")))]
             #[allow(dead_code)]
             #[doc = #DEFAULT_DOC]
             pub(crate) static FOO: i32 = 42;
@@ -409,17 +377,15 @@ mod tests {
             }
         };
         let tokens = UnstableAttribute::default().expand(item);
-
-        let (cfg, not_cfg) = cfg_attributes("unstable");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
             #[doc = #DEFAULT_DOC]
             pub mod foo {
                 pub fn bar() {}
             }
 
-            #not_cfg
+            #[cfg(not(any(doc, feature = "unstable")))]
             #[allow(dead_code)]
             #[doc = #DEFAULT_DOC]
             pub(crate) mod foo {
@@ -435,15 +401,13 @@ mod tests {
             pub use crate::foo::bar;
         };
         let tokens = UnstableAttribute::default().expand(item);
-
-        let (cfg, not_cfg) = cfg_attributes("unstable");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
             #[doc = #DEFAULT_DOC]
             pub use crate::foo::bar;
 
-            #not_cfg
+            #[cfg(not(any(doc, feature = "unstable")))]
             #[allow(unused_imports)]
             #[doc = #DEFAULT_DOC]
             pub(crate) use crate::foo::bar;
@@ -457,13 +421,62 @@ mod tests {
             impl Default for crate::foo::Foo {}
         };
         let tokens = UnstableAttribute::default().expand_impl(item);
-
-        let (cfg, _) = cfg_attributes("unstable");
         let expected = quote! {
-            #cfg
+            #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
             #[doc = #DEFAULT_DOC]
             impl Default for crate::foo::Foo {}
+        };
+        assert_eq!(tokens.to_string(), expected.to_string());
+    }
+}
+
+#[cfg(all(test, instability_disable_unstable_docs))]
+mod tests {
+    use pretty_assertions::assert_eq;
+    use quote::quote;
+    use syn::parse_quote;
+
+    use super::*;
+
+    const DEFAULT_DOC: &str = "# Stability\n\n**This API is marked as unstable** and is only available when the `unstable`\ncrate feature is enabled. This comes with no stability guarantees, and could be changed\nor removed at any time.";
+
+    #[test]
+    fn expand_public_fn() {
+        let item: syn::ItemFn = parse_quote! {
+            pub fn foo() {}
+        };
+        let tokens = UnstableAttribute::default().expand(item);
+        let expected = quote! {
+            #[cfg(feature = "unstable")]
+            #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
+            #[doc = #DEFAULT_DOC]
+            pub fn foo() {}
+
+            #[cfg(not(feature = "unstable"))]
+            #[allow(dead_code)]
+            #[doc = #DEFAULT_DOC]
+            pub(crate) fn foo() {}
+        };
+        assert_eq!(tokens.to_string(), expected.to_string());
+    }
+
+    #[test]
+    fn expand_public_use() {
+        let item: syn::ItemUse = parse_quote! {
+            pub use crate::foo::bar;
+        };
+        let tokens = UnstableAttribute::default().expand(item);
+        let expected = quote! {
+            #[cfg(feature = "unstable")]
+            #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
+            #[doc = #DEFAULT_DOC]
+            pub use crate::foo::bar;
+
+            #[cfg(not(feature = "unstable"))]
+            #[allow(unused_imports)]
+            #[doc = #DEFAULT_DOC]
+            pub(crate) use crate::foo::bar;
         };
         assert_eq!(tokens.to_string(), expected.to_string());
     }
