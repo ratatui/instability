@@ -66,6 +66,19 @@ mod unstable;
 /// - `issue`: a link or reference to a tracking issue for the unstable feature. This will be
 ///   included in the item's documentation.
 ///
+/// # Disabling during documentation generation
+///
+/// By default, this macro will include the unstable item when generating documentation by gating
+/// using a composite configuration flag that includes `docs`. In some cases, this may not be
+/// desirable, such as when checking docs with `cargo-semver-checks`. You can disable this by adding
+/// the `instability_disable_unstable_docs` RUSTFLAGS configuration flag to your build script. E.g.:
+///
+/// ```shell
+/// RUSTFLAGS="--cfg instability_disable_unstable_docs" cargo build
+/// ```
+///
+/// This will not prevent the item from being compiled when the unstable feature flag is enabled.
+///
 /// # Examples
 ///
 /// We can apply the attribute to a public function like so:
