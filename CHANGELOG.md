@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [0.3.8](https://github.com/ratatui/instability/compare/instability-v0.3.7...instability-v0.3.8) - 2025-07-11
+
+### Added
+
+- Add `instability_disable_unstable_docs` RUSTFLAGS ([#23](https://github.com/ratatui/instability/pull/23))
+
 ## [0.3.7](https://github.com/ratatui/instability/compare/instability-v0.3.6...instability-v0.3.7) - 2025-01-10
 
 ### Other
