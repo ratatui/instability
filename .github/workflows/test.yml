@@ -42,7 +42,9 @@ jobs:
       - name: cargo test --locked
         run: cargo test --locked --all-features --all-targets
       - name: cargo test with instability_exclude_unstable_docs
-        run: cargo test --locked --all-features --all-targets --config="build.rustflags='--cfg instability_disable_unstable_docs'"
+        env:
+          RUSTFLAGS: --cfg instability_disable_unstable_docs
+        run: cargo test --locked --all-features --all-targets
       - name: cargo test --doc
         run: cargo test --locked --all-features --doc
   minimal-versions:
@@ -83,7 +85,9 @@ jobs:
       - name: cargo test
         run: cargo test --locked --all-features --all-targets
       - name: cargo test with instability_exclude_unstable_docs
-        run: cargo test --locked --all-features --all-targets --config="build.rustflags='--cfg instability_disable_unstable_docs'"
+        env:
+          RUSTFLAGS: --cfg instability_disable_unstable_docs
+        run: cargo test --locked --all-features --all-targets
       - name: Cache Cargo dependencies
         uses: Swatinem/rust-cache@v2
   os-check:
@@ -105,7 +109,9 @@ jobs:
       - name: cargo test
         run: cargo test --locked --all-features --all-targets
       - name: cargo test with instability_exclude_unstable_docs
-        run: cargo test --locked --all-features --all-targets --config="build.rustflags='--cfg instability_disable_unstable_docs'"
+        env:
+          RUSTFLAGS: --cfg instability_disable_unstable_docs
+        run: cargo test --locked --all-features --all-targets
       - name: Cache Cargo dependencies
         uses: Swatinem/rust-cache@v2
   coverage:
