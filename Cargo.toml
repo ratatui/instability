@@ -8,7 +8,7 @@ license = "MIT"
 version = "0.3.8"
 edition = "2021"
 rust-version = "1.64"
-repository = "https://github.com/ratatui-org/instability"
+repository = "https://github.com/ratatui/instability"
 
 [workspace.dependencies]
 instability = { path = ".", version = "0.3.8" }
