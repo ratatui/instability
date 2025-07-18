@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [0.3.9](https://github.com/ratatui/instability/compare/instability-v0.3.8...instability-v0.3.9) - 2025-07-18
+
+### Other
+
+- split release jobs, fixup permissions ([#28](https://github.com/ratatui/instability/pull/28))
+
 ## [0.3.8](https://github.com/ratatui/instability/compare/instability-v0.3.7...instability-v0.3.8) - 2025-07-11
 
 ### Added
