@@ -25,7 +25,7 @@ pub fn stable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
             Item::Trait(item_trait) => unstable_attribute.expand(item_trait),
             Item::Const(item_const) => unstable_attribute.expand(item_const),
             Item::Static(item_static) => unstable_attribute.expand(item_static),
-            Item::Use(item_use) => unstable_attribute.expand(item_use),
+            Item::Use(item_use) => unstable_attribute.expand_use(item_use),
             Item::Impl(item_impl) => unstable_attribute.expand_impl(item_impl),
             _ => panic!("unsupported item type"),
         },
@@ -49,6 +49,13 @@ impl StableAttribute {
             return item.into_token_stream();
         }
         self.expand_impl(item)
+    }
+
+    pub fn expand_use(&self, item: impl ItemLike + ToTokens + Clone) -> TokenStream {
+        // We don't want to transform `pub use` items. Adding documentation has adverse effects.
+        // The reexported type can signal its own stability, the reexport itself can really only
+        // use the label that rustdoc renders.
+        item.into_token_stream()
     }
 
     pub fn expand_impl(&self, mut item: impl Stability + ToTokens) -> TokenStream {
@@ -273,14 +280,13 @@ mod tests {
     }
 
     #[test]
-    fn expand_public_use() {
+    fn public_use_is_noop() {
         let item: syn::ItemUse = parse_quote! {
             pub use crate::foo::bar;
         };
         let stable = StableAttribute::default();
-        let tokens = stable.expand(item);
+        let tokens = stable.expand_use(item);
         let expected = quote! {
-            #[doc = #STABLE_DOC]
             pub use crate::foo::bar;
         };
         assert_eq!(tokens.to_string(), expected.to_string());

@@ -25,7 +25,7 @@ pub fn unstable_macro(args: TokenStream, input: TokenStream) -> TokenStream {
             Item::Trait(item_trait) => unstable_attribute.expand(item_trait),
             Item::Const(item_const) => unstable_attribute.expand(item_const),
             Item::Static(item_static) => unstable_attribute.expand(item_static),
-            Item::Use(item_use) => unstable_attribute.expand(item_use),
+            Item::Use(item_use) => unstable_attribute.expand_use(item_use),
             Item::Impl(item_impl) => unstable_attribute.expand_impl(item_impl),
             _ => panic!("unsupported item type"),
         },
@@ -53,8 +53,25 @@ impl UnstableAttribute {
             return item.into_token_stream();
         }
 
-        let feature_flag = self.feature_flag();
         self.add_doc(&mut item);
+
+        self.expand_item_without_doc(item)
+    }
+
+    pub fn expand_use(&self, item: impl ItemLike + ToTokens + Clone) -> TokenStream {
+        // We don't want to transform `pub use` items. Adding documentation has adverse effects.
+        // The reexported type can signal its own stability, the reexport itself can really only
+        // use the label that rustdoc renders.
+        if !item.is_public() {
+            // We only care about public items.
+            return item.into_token_stream();
+        }
+
+        self.expand_item_without_doc(item)
+    }
+
+    fn expand_item_without_doc(&self, item: impl ItemLike + ToTokens + Clone) -> TokenStream {
+        let feature_flag = self.feature_flag();
 
         let mut hidden_item = item.clone();
         hidden_item.set_visibility(parse_quote! { pub(crate) });
@@ -400,16 +417,14 @@ mod tests {
         let item: syn::ItemUse = parse_quote! {
             pub use crate::foo::bar;
         };
-        let tokens = UnstableAttribute::default().expand(item);
+        let tokens = UnstableAttribute::default().expand_use(item);
         let expected = quote! {
             #[cfg(any(doc, feature = "unstable"))]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
-            #[doc = #DEFAULT_DOC]
             pub use crate::foo::bar;
 
             #[cfg(not(any(doc, feature = "unstable")))]
             #[allow(unused_imports)]
-            #[doc = #DEFAULT_DOC]
             pub(crate) use crate::foo::bar;
         };
         assert_eq!(tokens.to_string(), expected.to_string());
@@ -462,20 +477,18 @@ mod tests {
     }
 
     #[test]
-    fn expand_public_use() {
+    fn expand_public_use_no_docs() {
         let item: syn::ItemUse = parse_quote! {
             pub use crate::foo::bar;
         };
-        let tokens = UnstableAttribute::default().expand(item);
+        let tokens = UnstableAttribute::default().expand_use(item);
         let expected = quote! {
             #[cfg(feature = "unstable")]
             #[cfg_attr(docsrs, doc(cfg(feature = "unstable")))]
-            #[doc = #DEFAULT_DOC]
             pub use crate::foo::bar;
 
             #[cfg(not(feature = "unstable"))]
             #[allow(unused_imports)]
-            #[doc = #DEFAULT_DOC]
             pub(crate) use crate::foo::bar;
         };
         assert_eq!(tokens.to_string(), expected.to_string());

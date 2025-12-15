@@ -198,6 +198,9 @@ pub fn unstable(args: TokenStream, input: TokenStream) -> TokenStream {
 /// This attribute does not change the visibility of the annotated item. You should ensure that the
 /// item's visibility is set to `pub` if you want it to be part of your crate's public API.
 ///
+/// Re-exports (`pub use`) do not modify the re-exported item's stability or documentation, and they have
+/// no way to display the `since` and `issue` information.
+///
 /// # See also
 ///
 /// - The [`unstable`] attribute for marking an API as unstable.
