@@ -7,7 +7,7 @@ authors = ["Stephen M. Coakley <me@stephencoakley.com>", "The Ratatui Developers
 license = "MIT"
 version = "0.3.10"
 edition = "2021"
-rust-version = "1.64"
+rust-version = "1.88"
 repository = "https://github.com/ratatui/instability"
 
 [workspace.dependencies]
@@ -26,14 +26,14 @@ repository.workspace = true
 readme = "README.md"
 
 [dependencies]
-darling = "0.20.10"
-indoc = "2.0.5"
-proc-macro2 = "1.0.92"
-quote = "1.0.37"
-syn = { version = "2.0.90", features = ["derive", "full"] }
+darling = "0.23"
+indoc = "2"
+proc-macro2 = "1.0.86"
+quote = "1.0.25"
+syn = { version = "2.0.15", features = ["derive", "full"] }
 
 [dev-dependencies]
-pretty_assertions = "1.4.1"
+pretty_assertions = "1.4"
 
 [lib]
 proc-macro = true

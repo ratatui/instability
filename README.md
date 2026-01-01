@@ -44,7 +44,7 @@ Check out the [Docs] for detailed usage. See [instability-example] for a complet
 
 ## MSRV
 
-The minimum supported Rust version (MSRV) is 1.64.0.
+The minimum supported Rust version (MSRV) is 1.88.0.
 
 ## License
 
