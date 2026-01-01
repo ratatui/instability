@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [0.3.11](https://github.com/ratatui/instability/compare/instability-v0.3.10...instability-v0.3.11) - 2026-01-01
+
+### Other
+
+- bump msrv to 1.88 and update darling ([#34](https://github.com/ratatui/instability/pull/34))
+
 ## [0.3.10](https://github.com/ratatui/instability/compare/instability-v0.3.9...instability-v0.3.10) - 2025-11-29
 
 ### Other
