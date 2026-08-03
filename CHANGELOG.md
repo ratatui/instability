@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [0.3.13](https://github.com/ratatui/instability/compare/instability-v0.3.12...instability-v0.3.13) - 2026-08-03
+
+### Other
+
+- update `syn` to v3 ([#37](https://github.com/ratatui/instability/pull/37))
+
 ## [0.3.12](https://github.com/ratatui/instability/compare/instability-v0.3.11...instability-v0.3.12) - 2026-02-19
 
 ### Other
