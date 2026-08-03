@@ -5,13 +5,13 @@ members = ["example"]
 [workspace.package]
 authors = ["Stephen M. Coakley <me@stephencoakley.com>", "The Ratatui Developers"]
 license = "MIT"
-version = "0.3.12"
+version = "0.3.13"
 edition = "2021"
 rust-version = "1.88"
 repository = "https://github.com/ratatui/instability"
 
 [workspace.dependencies]
-instability = { path = ".", version = "0.3.12" }
+instability = { path = ".", version = "0.3.13" }
 
 [package]
 name = "instability"
