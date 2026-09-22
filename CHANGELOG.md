@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## [0.3.14](https://github.com/ratatui/instability/compare/instability-v0.3.13...instability-v0.3.14) - 2026-09-22
+
+### Other
+
+- Remove unnecessary build script ([#39](https://github.com/ratatui/instability/pull/39))
+
 ## [0.3.13](https://github.com/ratatui/instability/compare/instability-v0.3.12...instability-v0.3.13) - 2026-08-03
 
 ### Other
