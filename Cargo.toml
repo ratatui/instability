@@ -37,3 +37,6 @@ pretty_assertions = "1.4"
 
 [lib]
 proc-macro = true
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(instability_disable_unstable_docs)'] }
